@@ -1,8 +1,9 @@
 package com.github.coderodde.util;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -14,9 +15,14 @@ import java.util.TreeSet;
  * @version 1.6 (Sep 7, 2023)
  * @since 1.6 (Sep 7, 2023)
  */
-public final class GeneralTree<E extends Comparable<? super E>> {
+public final class GeneralTree<E> {
 
-    private final Set<GeneralTreeNode<E>> roots = new TreeSet<>();
+    private final SortedSet<GeneralTreeNode<E>> roots;
+    
+    public GeneralTree(final Comparator<GeneralTreeNode<E>> cmp) {
+        Objects.requireNonNull(cmp, "The input node comparator is null.");
+        this.roots = new TreeSet<>(cmp);
+    }
     
     public void addRoot(final GeneralTreeNode<E> root) {
         this.roots.add(
@@ -25,15 +31,8 @@ public final class GeneralTree<E extends Comparable<? super E>> {
                         "The input root node is null."));
     }
     
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        
-        for (final GeneralTreeNode<E> root : roots) {
-//            toStringTreeImpl(sb, root);
-        }
-        
-        return sb.toString();
+    public Collection<GeneralTreeNode<E>> getRoots() {
+        return roots;
     }
     
     /*

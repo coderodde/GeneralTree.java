@@ -1,5 +1,7 @@
 package com.github.coderodde.util;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
@@ -14,15 +16,17 @@ import java.util.TreeSet;
  * @version 1.6 (Sep 7, 2023)
  * @since 1.6 (Sep 7, 2023)
  */
-public final class GeneralTreeNode<E extends Comparable<? super E>> 
-        implements Iterable<GeneralTreeNode<E>> {
+public final class GeneralTreeNode<E> implements Iterable<GeneralTreeNode<E>> {
     
     private final E value;
     private final Set<GeneralTreeNode<E>> children;
 
-    public GeneralTreeNode(final E value) {
+    public GeneralTreeNode(final E value, 
+                           final Comparator<? super GeneralTreeNode<E>> cmp) {
+        
+        Objects.requireNonNull(cmp, "The input comparator is null.");
         this.value = value;
-        this.children = new TreeSet<>();
+        this.children = new TreeSet<>(cmp);
     }
     
     public E getData() {
@@ -31,6 +35,10 @@ public final class GeneralTreeNode<E extends Comparable<? super E>>
     
     public void addChild(final GeneralTreeNode<E> child) {
         children.add(child);
+    }
+    
+    public Collection<GeneralTreeNode<E>> getChildren() {
+        return children;
     }
     
     public int size() {
