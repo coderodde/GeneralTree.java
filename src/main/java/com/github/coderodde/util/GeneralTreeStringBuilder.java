@@ -43,8 +43,8 @@ public final class GeneralTreeStringBuilder<E> {
         /**
          * Counts how many children of the key tree node where processed.
          */
-        private final Map<GeneralTreeNode<E>, Integer> counterMap =
-                new HashMap<>();
+        private final Map<GeneralTreeNode<E>, Integer> 
+                childrenIterationCountMap = new HashMap<>();
         
         /**
          * The actual string builder.
@@ -52,41 +52,47 @@ public final class GeneralTreeStringBuilder<E> {
         private final StringBuilder stringBuilder = new StringBuilder();
         
         private String buildTreeStringImpl(final GeneralTree<E> tree) {
-            final ToStringState<E> state = new ToStringState<>();
-
             for (final GeneralTreeNode<E> root : tree.getRoots()) {
-                processRoot(root);
+                childrenIterationCountMap.put(root, 0);
+                depthFirstSearch(root);
+                childrenIterationCountMap.clear();
             }
 
-            return state.toString();
+            return stringBuilder.toString();
         }
         
-        private void processRoot(final GeneralTreeNode<E> root) {
-
+        private void depthFirstSearch(final GeneralTreeNode<E> root) {
             stack.addLast(root);
-
-            while (!stack.isEmpty()) {
-                final GeneralTreeNode<E> top = stack.getLast();
-                counterMap.put(top, 0);
-                printLine(top);
-            }
-        }
-        
-        private void printLine(final GeneralTreeNode<E> top) {
+            
             for (final GeneralTreeNode<E> node : stack) {
-                if (node.equals(top)) {
-                    stringBuilder.append(node);
-                    return;
+                if (node.equals(root)) {
+                    break;
                 }
                 
-                counterMap.put(node, counterMap.get(node) + 1);
-                
-                if (counterMap.get(node) == node.getChildren().size()) {
+                if (childrenIterationCountMap.get(node) < 
+                        node.getChildren().size()) {
+                    
+                    stringBuilder.append("|");
+                } else if (childrenIterationCountMap.get(node)
+                        == node.getChildren().size()) {
+                    
                     stringBuilder.append(" ");
                 } else {
-                    stringBuilder.append("|");
+                    throw RuntimeException("Eyeah");
                 }
             }
+            
+            stringBuilder.append(root.getData());
+            childrenIterationCountMap.put(root, childrenIterationCountMap.get(root) + 1);
+            stringBuilder.append("\n");
+            
+            for (final GeneralTreeNode<E> child : root.getChildren()) {
+                childrenIterationCountMap.put(child, 0);
+                depthFirstSearch(child);
+            }
+            
+            // Remove the root:
+            stack.removeLast();
         }
     }
     
