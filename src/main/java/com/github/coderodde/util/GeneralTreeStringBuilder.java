@@ -53,9 +53,25 @@ public final class GeneralTreeStringBuilder<E> {
         
         private String buildTreeStringImpl(final GeneralTree<E> tree) {
             for (final GeneralTreeNode<E> root : tree.getRoots()) {
-                childrenIterationCountMap.put(root, 0);
-                depthFirstSearch(root, null);
-                childrenIterationCountMap.clear();
+                stack.addLast(root);
+                stringBuilder.append(root.getData());
+
+                if (!root.getChildren().isEmpty()) {
+                    stringBuilder.append("+");
+                }
+                
+                stringBuilder.append("\n");
+                
+                for (final GeneralTreeNode<E> node : root.getChildren()) {
+                    
+                    stack.addLast(root);
+                    childrenIterationCountMap.put(root, 0);
+                    depthFirstSearch(node, root);
+                    childrenIterationCountMap.clear();
+                    stack.removeLast();
+                }
+                
+                stack.removeLast();
             }
 
             return stringBuilder.toString();
@@ -66,9 +82,6 @@ public final class GeneralTreeStringBuilder<E> {
             stack.addLast(root);
             
             for (final GeneralTreeNode<E> node : stack) {
-                if (parent == null) {
-                    continue;
-                }
                 
                 if (childrenIterationCountMap.get(parent) < 
                         root.getChildren().size()) {
@@ -94,15 +107,11 @@ public final class GeneralTreeStringBuilder<E> {
                 stringBuilder.append("+");
             }
             
-            childrenIterationCountMap.put(
-                    root,
-                    childrenIterationCountMap.get(root) + 1);
-            
             stringBuilder.append("\n");
             
             for (final GeneralTreeNode<E> child : root.getChildren()) {
-                childrenIterationCountMap.put(child, 0);
-                depthFirstSearch(child, null);
+                childrenIterationCountMap.put(root, 0);
+                depthFirstSearch(child, root);
             }
             
             // Remove the root:

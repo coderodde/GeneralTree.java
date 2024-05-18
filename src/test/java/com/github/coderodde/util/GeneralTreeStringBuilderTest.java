@@ -49,7 +49,7 @@ public final class GeneralTreeStringBuilderTest {
         a.addChild(n2);
         
         tree.addRoot(D);
-//        tree.addRoot(E);
+        tree.addRoot(E);
         
         final GeneralTreeStringBuilder builder =
                 new GeneralTreeStringBuilder<>();
